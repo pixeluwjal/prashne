@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { registerUser, verifyEmail } from '@/lib/api/auth';
 import { FaUserTie, FaUserGraduate, FaSpinner, FaArrowLeft } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 

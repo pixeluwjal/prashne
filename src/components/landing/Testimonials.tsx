@@ -1,7 +1,7 @@
 // components/landing/Testimonials.tsx
 'use client';
 
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { useInView } from '@/hooks/useInView';
 import { FaStar, FaQuoteRight } from 'react-icons/fa';
 import Image from 'next/image';

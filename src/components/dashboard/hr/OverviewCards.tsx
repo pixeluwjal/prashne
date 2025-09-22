@@ -3,7 +3,7 @@
 
 import useSWR from 'swr';
 import { getAnalytics } from '@/lib/api/hr';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'; // Import the new component
 import { AiOutlineClockCircle, AiOutlineSchedule, AiOutlineFileText } from 'react-icons/ai';

@@ -1,7 +1,7 @@
 // components/landing/HowItWorks.tsx
 'use client';
 
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useInView } from '@/hooks/useInView'; // Assuming useInView hook from previous step
 import { 

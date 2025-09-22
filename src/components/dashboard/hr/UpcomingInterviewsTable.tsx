@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import useSWR from 'swr';
 import { format } from 'date-fns';
 import { getInterviews } from '@/lib/api/hr';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';

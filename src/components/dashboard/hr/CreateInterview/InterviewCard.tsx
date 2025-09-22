@@ -1,7 +1,7 @@
 // components/dashboard/hr/CreateInterview/InterviewCard.tsx
 'use client';
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

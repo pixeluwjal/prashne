@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 // NEW: Imported FaCheckCircle icon
 import { FaRobot, FaArrowRight, FaCheckCircle } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
