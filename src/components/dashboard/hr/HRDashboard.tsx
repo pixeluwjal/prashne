@@ -6,7 +6,6 @@ import { Sidebar } from './Sidebar';
 import { TopNavbar } from './TopNavbar';
 import { OverviewCards } from './OverviewCards';
 import { UpcomingInterviewsTable } from './UpcomingInterviewsTable';
-import { AnalyticsSection } from './AnalyticsSection';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'; // For mobile drawer
 
 export default function HRDashboard() {
@@ -35,7 +34,6 @@ export default function HRDashboard() {
         <main className="p-4 sm:p-6 lg:p-8 space-y-8">
           <OverviewCards />
           <UpcomingInterviewsTable />
-          <AnalyticsSection />
         </main>
       </div>
     </div>

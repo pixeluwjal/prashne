@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch'; // Assuming you have a Switch component from shadcn/ui
 import { useInView } from '@/hooks/useInView';
 import { AiOutlineCheck } from 'react-icons/ai';

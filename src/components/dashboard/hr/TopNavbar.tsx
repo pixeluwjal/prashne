@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { UserNav } from '@/components/ui/UserNav'; // 1. Import our custom UserNav
 import { AiOutlineBell, AiOutlinePlus } from 'react-icons/ai';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { FiMenu, FiSearch } from 'react-icons/fi';
 import { Input } from '@/components/ui/input';
 
