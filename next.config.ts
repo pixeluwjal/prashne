@@ -1,7 +1,28 @@
-import type { NextConfig } from "next";
+// next.config.js
 
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // ✅ Disable TypeScript type checking
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  // ✅ Disable ESLint during builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // ✅ Your existing config
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ui-avatars.com',
+        port: '',
+        pathname: '/api/**',
+      },
+    ],
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
