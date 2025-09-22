@@ -1,7 +1,7 @@
 // components/landing/Features.tsx
 'use client';
 
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { AiOutlineSchedule, AiOutlineFileText } from 'react-icons/ai';
 import { FaRobot, FaLock } from 'react-icons/fa';
 import { useInView } from '@/hooks/useInView'; // NEW: Import the custom hook

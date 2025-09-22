@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useInView } from '@/hooks/useInView';
 import { FaArrowRight } from 'react-icons/fa';
 import { AiOutlineCheck } from 'react-icons/ai';

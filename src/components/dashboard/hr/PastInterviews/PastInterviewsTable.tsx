@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { getInterviews } from '@/lib/api/hr';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
