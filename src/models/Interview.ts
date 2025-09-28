@@ -12,16 +12,19 @@ export interface IInterview extends Document {
   hrId: string;
   candidateName: string;
   candidateEmail: string;
-  candidateId?: mongoose.Schema.Types.ObjectId; // Stores the ID of the user who completed the interview
+  candidateId?: mongoose.Schema.Types.ObjectId;
   jobTitle: string;
   jobDescription: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   status: 'pending' | 'completed' | 'expired';
   interviewLink: string;
   expiresAt: Date;
-  questions: { text: string }[];
-  transcripts?: ITranscript[]; // Stores the full conversation transcript
-  feedbackId?: mongoose.Schema.Types.ObjectId; // Links to the generated feedback document
+  questions: {
+    text: string;
+    answer?: string; // The HR's model/ideal answer (optional)
+  }[];
+  transcripts?: ITranscript[];
+  feedbackId?: mongoose.Schema.Types.ObjectId;
 }
 
 // Schema for embedded transcript documents
@@ -36,16 +39,19 @@ const InterviewSchema: Schema<IInterview> = new Schema({
   hrId: { type: String, required: true },
   candidateName: { type: String, required: true },
   candidateEmail: { type: String, required: true },
-  candidateId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to the User model
+  candidateId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   jobTitle: { type: String, required: true },
-  jobDescription: { type: String, required: true },
+  jobDescription: { type: String, required: true }, // Kept as required
   difficulty: { type: String, enum: ['Easy', 'Medium', 'Hard'], required: true },
   status: { type: String, enum: ['pending', 'completed', 'expired'], default: 'pending' },
   interviewLink: { type: String, required: true, unique: true },
   expiresAt: { type: Date, required: true },
-  questions: [{ text: { type: String, required: true } }],
-  transcripts: [TranscriptSchema], // Array of transcript entries
-  feedbackId: { type: mongoose.Schema.Types.ObjectId, ref: 'Feedback' }, // Reference to the Feedback model
+  questions: [{
+    text: { type: String, required: true },
+    answer: { type: String } // Storing the HR's model answer here (optional)
+  }],
+  transcripts: [TranscriptSchema],
+  feedbackId: { type: mongoose.Schema.Types.ObjectId, ref: 'Feedback' },
 }, { timestamps: true });
 
 const Interview: Model<IInterview> = models.Interview || mongoose.model<IInterview>('Interview', InterviewSchema);

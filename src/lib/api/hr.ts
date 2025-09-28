@@ -1,47 +1,50 @@
 // src/lib/api/hr.ts
 
-// ✅ Helper function to handle responses
-const handleResponse = async (response: Response) => {
-  const result = await response.json();
-  if (!response.ok) {
-    throw new Error(result.error || `HTTP error! status: ${response.status}`);
-  }
-  return result;
-};
+// ✅ A single, robust helper function for all API calls
+async function apiHelper(url: string, method: 'GET' | 'POST', payload?: any) {
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // Automatically include cookies for all requests
+  };
 
-// ✅ Data structure for creating an interview
-interface CreateInterviewData {
-  jobTitle: string;
-  candidateName: string;
-  candidateEmail: string;
-  expiresAt: Date;
-  questionBank: string;
-  duration: string;
-  notes: string;
+  if (payload) {
+    options.body = JSON.stringify(payload);
+  }
+
+  const response = await fetch(url, options);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || `An unknown error occurred on ${method} ${url}`);
+  }
+
+  return data;
 }
 
-// ✅ Create interview
-export const createInterview = (data: CreateInterviewData) => {
-  return fetch(`/api/hr/create-interview`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-    credentials: "include", // 🔥 send session cookies
-  }).then(handleResponse);
-};
 
-// ✅ Get analytics
-export const getAnalytics = () => {
-  return fetch(`/api/hr/analytics`, {
-    method: "GET",
-    credentials: "include",
-  }).then(handleResponse);
-};
+// ✅ The CORRECT createInterview function for the form we built
+export async function createInterview(payload: any) {
+  return apiHelper('/api/hr/create-interview', 'POST', payload);
+}
 
-// ✅ Get interviews
-export const getInterviews = () => {
-  return fetch(`/api/hr/interviews`, {
-    method: "GET",
-    credentials: "include",
-  }).then(handleResponse);
-};
+// ✅ The CORRECT generateAIQuestions function for the form we built
+export async function generateAIQuestions(payload: {
+  jobTitle: string;
+  jobDescription: string;
+  difficulty: string;
+  numQuestions: number;
+}) {
+  return apiHelper('/api/hr/generate-questions', 'POST', payload);
+}
+
+// ✅ Your other API functions, updated to use the new helper
+export async function getAnalytics() {
+  return apiHelper('/api/hr/analytics', 'GET');
+}
+
+export async function getInterviews() {
+  return apiHelper('/api/hr/interviews', 'GET');
+}
