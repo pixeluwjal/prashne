@@ -12,8 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 const navItems = [
   { href: '/dashboard/hr', icon: AiOutlineDashboard, label: 'Dashboard' },
   { href: '/dashboard/hr/create-interview', icon: AiOutlineCalendar, label: 'Create Interview' },
-  { href: '/dashboard/hr/reports', icon: AiOutlineFileText, label: 'Reports' },
   { href: '/dashboard/hr/past-interviews', icon: FiArchive, label: 'Past Interviews' },
+  { href: '/dashboard/hr/reports', icon: AiOutlineFileText, label: 'Analytics' }
 ];
 
 const settingsNav = [
