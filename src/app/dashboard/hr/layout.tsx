@@ -3,8 +3,7 @@
 
 import { useState } from 'react';
 import { Sidebar } from '@/components/dashboard/hr/Sidebar';
-import { TopNavbar } from '@/components/dashboard/hr/TopNavbar';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function HRDashboardLayout({
   children,
@@ -14,25 +13,47 @@ export default function HRDashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      {/* This div shows the Sidebar permanently on desktop ONLY */}
-      <div className="hidden lg:block fixed inset-y-0 left-0 z-40">
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Hidden sidebar trigger for mobile */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="p-2 rounded-lg bg-card border border-border shadow-sm hover:shadow-md transition-all duration-300"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Theme Toggle */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+
+      {/* Sidebar - Hidden on mobile, visible on desktop */}
+      <div className="hidden lg:block fixed inset-y-0 left-0 z-30 w-64">
         <Sidebar />
       </div>
       
-      {/* This handles the slide-out drawer on mobile */}
-      <div className="lg:hidden">
-        <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-          <SheetContent side="left" className="w-64 p-0 border-r-0">
-            <Sidebar />
-          </SheetContent>
-        </Sheet>
-      </div>
+      {/* Mobile sidebar overlay */}
+      {isSidebarOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+          {/* Sidebar */}
+          <div className="lg:hidden fixed inset-y-0 left-0 w-80 z-50">
+            <Sidebar onMobileClose={() => setIsSidebarOpen(false)} />
+          </div>
+        </>
+      )}
 
-      {/* This is the main content area with a left margin on desktop */}
-      <div className="lg:ml-64">
-        <TopNavbar onMenuClick={() => setIsSidebarOpen(true)} />
-        <main className="p-4 sm:p-6 lg:p-8">
+      {/* Main content area */}
+      <div className="w-full lg:pl-64">
+        <main className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>

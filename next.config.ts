@@ -2,6 +2,7 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+serverExternalPackages: ['pdf-parse'],
   // ✅ Disable TypeScript type checking
   typescript: {
     ignoreBuildErrors: true,
