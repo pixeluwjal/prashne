@@ -26,3 +26,38 @@ export async function GET(): Promise<NextResponse> {
     return NextResponse.json({ error: 'Failed to fetch resumes' }, { status: 500 });
   }
 }
+
+export async function POST(request: NextRequest) {
+    try {
+        await dbConnect();
+        
+        const currentUser = await getCurrentUser();
+        if (!currentUser || !currentUser._id) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const resumeData = await request.json();
+        
+        // Add the uploadedBy field and ensure proper data structure
+        const resumeWithUser = {
+            ...resumeData,
+            uploadedBy: currentUser._id,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+
+        const newResume = await ResumeParsed.create(resumeWithUser);
+
+        return NextResponse.json({ 
+            success: true, 
+            data: newResume 
+        }, { status: 201 });
+
+    } catch (error: any) {
+        console.error('API Error (POST Resume):', error);
+        return NextResponse.json(
+            { success: false, error: `Failed to create resume: ${error.message}` },
+            { status: 500 }
+        );
+    }
+}

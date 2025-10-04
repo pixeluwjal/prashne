@@ -53,7 +53,7 @@ export function Hero() {
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-4 pt-4 transition-all duration-700 delay-800 ${isMounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-              <Link href="/signup">
+              <Link href="/auth/signup">
                 {/* ENHANCEMENT: Added 'group' for hover effect on the arrow icon */}
                 <Button size="lg" className="group text-lg px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl flex items-center gap-2">
                   Get Started Free 

@@ -86,6 +86,8 @@ const ResumeEditorModal: FC<ResumeEditorModalProps> = ({ isOpen, onClose, onSave
         }
     };
 
+    const isNewResume = !formData._id;
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -111,8 +113,12 @@ const ResumeEditorModal: FC<ResumeEditorModalProps> = ({ isOpen, onClose, onSave
                                     <FiEdit3 className="text-blue-500 dark:text-blue-400 text-xl" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Edit Resume</h2>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm">Review and update your resume information</p>
+                                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {isNewResume ? 'Review & Save Resume' : 'Edit Resume'}
+                                    </h2>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm">
+                                        {isNewResume ? 'Review parsed data and save to database' : 'Update your resume information'}
+                                    </p>
                                 </div>
                             </div>
                             <motion.button 
@@ -331,7 +337,7 @@ const ResumeEditorModal: FC<ResumeEditorModalProps> = ({ isOpen, onClose, onSave
                                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 transition-all duration-200 shadow-lg shadow-blue-500/25"
                             >
                                 {loading ? <FiLoader className="animate-spin" /> : <FiSave />}
-                                {loading ? 'Saving...' : 'Save & Finalize'}
+                                {loading ? 'Saving...' : isNewResume ? 'Save Resume' : 'Save Changes'}
                             </motion.button>
                         </footer>
                     </motion.div>

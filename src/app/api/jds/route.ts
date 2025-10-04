@@ -1,36 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import JobDescription, { IJobDescription } from '@/models/JobDescription'; 
-// 💡 FIX: Import the DEFAULT export (named 'getCurrentUser' in the import line).
 import getCurrentUser from '@/lib/auth'; 
 
-import { GoogleGenAI } from '@google/genai'; 
-
-// Initialize Gemini Client
-const geminiAi = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); 
-
-// Define the required JSON schema for AI generation of a Job Description
-const jdSchema = {
-    type: "object",
-    properties: {
-        title: { type: "string", description: "The professional job title." },
-        company: { type: "string", description: "A plausible company name if not specified." },
-        location: { type: "string", description: "A plausible location (e.g., Remote, San Francisco)." },
-        description: { type: "string", description: "The detailed job description, including responsibilities and requirements, formatted with paragraphs." },
-        skills: {
-            type: "array",
-            items: { type: "string", description: "Key technical and soft skills required for the role." }
-        }
-    },
-    required: ["title", "description", "skills"]
-};
-
-// --- GET: Fetch all JDs for the dashboard/list ---
+// --- GET: Fetch all JDs for the current HR only ---
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
     
-    const jds: IJobDescription[] = await JobDescription.find({})
+    // Get current HR user
+    const currentUser = await getCurrentUser(); 
+    if (!currentUser || !currentUser._id) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Unauthorized: User not found or session expired.' 
+      }, { status: 401 });
+    }
+    const hrId = currentUser._id;
+
+    // Fetch only JDs created by this HR
+    const jds: IJobDescription[] = await JobDescription.find({ hrId })
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, data: jds }, { status: 200 });
@@ -44,18 +33,20 @@ export async function GET(request: NextRequest) {
   }
 }
 
-
 // --- POST: Create a new JD (Manual or AI Generated) ---
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     
-    // 💡 FIX 1: Authenticate and retrieve the required hrId using the DIRECT IMPORTED NAME
+    // Authenticate and retrieve the required hrId
     const currentUser = await getCurrentUser(); 
-    if (!currentUser || !currentUser._id) { // Check for both user and ID field
-        return NextResponse.json({ success: false, error: 'Unauthorized: User not found or session expired.' }, { status: 401 });
+    if (!currentUser || !currentUser._id) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Unauthorized: User not found or session expired.' 
+      }, { status: 401 });
     }
-    const userId = currentUser._id;
+    const hrId = currentUser._id;
 
     const body = await request.json();
     let jdData = body;
@@ -66,9 +57,8 @@ export async function POST(request: NextRequest) {
       jdData = await generateJDFromAI(body.aiPrompt);
     }
 
-    // 💡 FIX 2: Construct the final data payload, including the required hrId
-    const finalData = { ...jdData, hrId: userId };
-
+    // Construct the final data payload, including the required hrId
+    const finalData = { ...jdData, hrId };
 
     // Input validation (basic check for required fields *after* AI generation/manual input)
     if (!finalData.title || !finalData.description) {
@@ -87,10 +77,8 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error: any) {
-    // Catch Mongoose Validation Error (like missing hrId/title/description)
     console.error('API Error (POST JD):', error);
     
-    // Provide a more detailed error message from Mongoose for validation failures
     const errorMessage = error.message.includes('validation failed') 
         ? `Validation Failed: ${Object.keys(error.errors).map(key => error.errors[key].path).join(', ')} missing.` 
         : 'Failed to create job description.';
@@ -103,20 +91,37 @@ export async function POST(request: NextRequest) {
 }
 
 // --- AI GENERATION HELPER ---
-
 async function generateJDFromAI(prompt: string): Promise<any> {
     try {
+        const { GoogleGenAI } = await import('@google/genai');
+        const geminiAi = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+
+        const jdSchema = {
+            type: "object",
+            properties: {
+                title: { type: "string", description: "The professional job title." },
+                company: { type: "string", description: "A plausible company name if not specified." },
+                location: { type: "string", description: "A plausible location (e.g., Remote, San Francisco)." },
+                description: { type: "string", description: "The detailed job description, including responsibilities and requirements, formatted with paragraphs." },
+                skills: {
+                    type: "array",
+                    items: { type: "string", description: "Key technical and soft skills required for the role." }
+                }
+            },
+            required: ["title", "description", "skills"]
+        };
+
         const systemInstruction = `You are an expert HR assistant. Generate a highly detailed and attractive Job Description based on the user's brief prompt. Return the output ONLY as a single JSON object adhering strictly to the provided schema. Ensure the description is rich with responsibilities, requirements, and benefits.`;
         
         const aiPrompt = `${systemInstruction}\n\nUser Prompt: ${prompt}`;
 
         const response = await geminiAi.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.0-flash',
             contents: aiPrompt,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: jdSchema as any,
-                temperature: 0.7, // Higher temperature for more creative/detailed JD
+                temperature: 0.7,
             }
         });
 
@@ -127,7 +132,7 @@ async function generateJDFromAI(prompt: string): Promise<any> {
 
         const parsedJson = JSON.parse(jsonString);
         
-        // Ensure skills field is an array, even if the model was lazy
+        // Ensure skills field is an array
         if (typeof parsedJson.skills === 'string') {
              parsedJson.skills = parsedJson.skills
                  .split(',')

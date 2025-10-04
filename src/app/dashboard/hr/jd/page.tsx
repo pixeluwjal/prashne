@@ -14,6 +14,7 @@ interface JD {
     location: string;
     description: string;
     skills: string[];
+    hrId: string;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -642,7 +643,6 @@ export default function JDListPage() {
 
     return (
         <>
-            {/* Updated Background to #0A0A0A for dark mode and white for light mode */}
             <div className="min-h-screen bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-slate-200 font-sans p-4 sm:p-6 lg:p-8 relative overflow-hidden">
                 {/* Enhanced Background Effects */}
                 <div className="absolute inset-0 bg-grid-slate-300/30 dark:bg-grid-slate-800/30 [mask-image:linear-gradient(to_bottom,white_5%,transparent_95%)]"></div>
