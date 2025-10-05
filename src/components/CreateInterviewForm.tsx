@@ -51,6 +51,37 @@ export function CreateInterviewForm() {
   const [jdSearchTerm, setJdSearchTerm] = useState('');
   const [isLoadingJDs, setIsLoadingJDs] = useState(false);
 
+    useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      const candidateName = urlParams.get('candidateName');
+      const candidateEmail = urlParams.get('candidateEmail');
+      const jdTitle = urlParams.get('jdTitle');
+      const jdCompany = urlParams.get('jdCompany');
+      const jdDescription = urlParams.get('jdDescription');
+
+      if (candidateName || candidateEmail || jdTitle || jdDescription) {
+        setFormData(prev => ({
+          ...prev,
+          candidateName: candidateName || prev.candidateName,
+          candidateEmail: candidateEmail || prev.candidateEmail,
+          jobTitle: jdTitle || prev.jobTitle,
+          jobDescription: jdDescription || prev.jobDescription
+        }));
+
+        // If we have candidate details, jump to step 2
+        if (candidateName && candidateEmail) {
+          setCurrentStep(2);
+        }
+
+        // Show success message if data was pre-filled
+        if (candidateName && jdTitle) {
+          toast.success(`Pre-filled form for ${candidateName} - ${jdTitle}`);
+        }
+      }
+    }
+  }, []);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));

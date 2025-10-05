@@ -146,59 +146,81 @@ export default function ResumesPage() {
     loadResumes();
   }, [loadResumes]);
 
-  const handleFileUpload = async (file: File) => {
+ const handleFileUpload = async (file: File) => {
     const uploadToast = toast.loading("Uploading and parsing resume...");
     try {
-      const formData = new FormData();
-      formData.append("resume", file);
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      if (!response.ok || !data.success)
-        throw new Error(data.error || "Upload failed");
+        const formData = new FormData();
+        formData.append("resume", file);
+        const response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success)
+            throw new Error(data.error || "Upload failed");
 
-      toast.success("✅ Resume parsed! Please review.", { id: uploadToast });
-      const newResume = data.data;
-      setIsUploadModalOpen(false);
-      setEditorInitialData(newResume);
-      setIsEditorModalOpen(true);
-      return newResume;
+        // Auto-save the parsed resume
+        const saveResponse = await fetch("/api/resumes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data.data),
+        });
+
+        if (!saveResponse.ok) {
+            const error = await saveResponse.json();
+            throw new Error(error.error || "Failed to save resume");
+        }
+
+        toast.success("✅ Resume uploaded and saved successfully!", { id: uploadToast });
+        setIsUploadModalOpen(false);
+        
+        // Refresh the page to show the new resume
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+        
     } catch (error: any) {
-      toast.error(`❌ ${error.message}`, { id: uploadToast });
-      throw error;
+        toast.error(`❌ ${error.message}`, { id: uploadToast });
+        throw error;
     }
-  };
-
-  const handleEditorSave = async (data: Resume) => {
+};
+ const handleEditorSave = async (data: Resume) => {
     const method = data._id ? "PUT" : "POST";
     const url = data._id ? `/api/resumes/${data._id}` : "/api/resumes";
 
     const response = await fetch(url, {
-      method: method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to save resume");
+        const error = await response.json();
+        throw new Error(error.error || "Failed to save resume");
     }
 
     const result = await response.json();
     const savedResume = result.data;
 
+    // FIXED: Cleaner state update logic to prevent duplicates
     setResumes((prev) => {
-      const exists = prev.some((r) => r._id === savedResume._id);
-      if (exists) {
-        return prev.map((r) => (r._id === savedResume._id ? savedResume : r));
-      } else {
-        return [savedResume, ...prev];
-      }
+        if (data._id) {
+            // Update existing resume
+            return prev.map((r) => (r._id === savedResume._id ? savedResume : r));
+        } else {
+            // Add new resume - check if it already exists to prevent duplicates
+            const exists = prev.some((r) => r._id === savedResume._id);
+            if (exists) {
+                return prev.map((r) => (r._id === savedResume._id ? savedResume : r));
+            } else {
+                return [savedResume, ...prev];
+            }
+        }
     });
+    
     setIsEditorModalOpen(false);
-  };
+    setEditorInitialData(null); // Clear initial data after save
+};
 
   const handleOpenEditor = (resume: Resume) => {
     setEditorInitialData(resume);

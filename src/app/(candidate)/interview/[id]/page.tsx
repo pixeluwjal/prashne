@@ -129,7 +129,6 @@ export default function CandidateInterview() {
     }
   };
 
- // In your endCall function
 const endCall = async () => {
   setCallState('ending');
   setSaveStatus('saving');
@@ -147,22 +146,31 @@ const endCall = async () => {
       throw new Error('User not authenticated');
     }
 
+    // FIXED: Use the correct API endpoint and structure
     const response = await fetch(`/api/interviews/${id}/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // Important for cookies
       body: JSON.stringify({
-        candidateId: userData.user._id, // Use _id from your user model
-        interviewTitle,
-        transcripts,
+        candidateId: userData.user._id,
+        transcripts: transcripts, // Make sure this matches your API expectation
       }),
     });
 
-    if (response.ok) {
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Failed to save interview');
+    }
+
+    if (result.success) {
       setSaveStatus('saved');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-      router.push("/");
+      setTimeout(() => {
+        setSaveStatus('idle');
+        router.push("/dashboard/hr/reports"); // Redirect to interviews page
+      }, 2000);
     } else {
-      throw new Error('Failed to save interview');
+      throw new Error('Failed to save interview data');
     }
   } catch (error) {
     console.error('Error saving feedback:', error);
