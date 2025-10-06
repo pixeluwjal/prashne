@@ -146,38 +146,29 @@ export default function ResumesPage() {
     loadResumes();
   }, [loadResumes]);
 
- const handleFileUpload = async (file: File) => {
+// In ResumesPage component
+const handleFileUpload = async (file: File) => {
     const uploadToast = toast.loading("Uploading and parsing resume...");
     try {
         const formData = new FormData();
         formData.append("resume", file);
+        
+        // ONLY call /api/upload - it already saves to database!
         const response = await fetch("/api/upload", {
             method: "POST",
             body: formData,
         });
+        
         const data = await response.json();
-        if (!response.ok || !data.success)
+        if (!response.ok || !data.success) {
             throw new Error(data.error || "Upload failed");
-
-        // Auto-save the parsed resume
-        const saveResponse = await fetch("/api/resumes", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data.data),
-        });
-
-        if (!saveResponse.ok) {
-            const error = await saveResponse.json();
-            throw new Error(error.error || "Failed to save resume");
         }
 
         toast.success("✅ Resume uploaded and saved successfully!", { id: uploadToast });
         setIsUploadModalOpen(false);
         
-        // Refresh the page to show the new resume
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
+        // Refresh the resumes list
+        await loadResumes(false);
         
     } catch (error: any) {
         toast.error(`❌ ${error.message}`, { id: uploadToast });

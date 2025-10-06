@@ -24,7 +24,7 @@ const navItems = [
   { href: '/dashboard/hr/resumes', icon: FiFileText, label: 'Resumes' },
   { href: '/dashboard/hr/jd', icon: FiBriefcase, label: 'Job Descriptions' },
   { href: '/dashboard/hr/jd-matching', icon: FiGitMerge, label: 'JD Matching' },
-  { href: '/dashboard/hr/create-interview', icon: FiCalendar, label: 'Create Interview' },
+  { href: '/dashboard/hr/create-interview', icon: FiCalendar, label: 'Interviews' },
   { href: '/dashboard/hr/past-interviews', icon: FiArchive, label: 'Past Interviews' },
   { href: '/dashboard/hr/reports', icon: FiFileText, label: 'Analysis' }
 ];

@@ -59,9 +59,26 @@ const InterviewCard = ({ interview, onAction }: { interview: any; onAction: (typ
     setShowActions(false);
   };
 
-  const actions = [
-    { icon: FiCopy, label: 'Copy Link', action: () => handleCopyLink(), color: 'text-blue-600 dark:text-blue-400' }
-  ];
+  const getAvailableActions = () => {
+    const baseActions = [];
+    
+    // Only show copy link for non-completed interviews
+    if (interview.status.toLowerCase() !== 'completed') {
+      baseActions.push({
+        icon: FiCopy, 
+        label: 'Copy Link', 
+        action: () => handleCopyLink(), 
+        color: 'text-blue-600 dark:text-blue-400'
+      });
+    }
+
+    // Add other actions that should be available for all statuses
+    // baseActions.push({ ...other actions });
+
+    return baseActions;
+  };
+
+  const actions = getAvailableActions();
 
   return (
     <motion.div
@@ -90,45 +107,54 @@ const InterviewCard = ({ interview, onAction }: { interview: any; onAction: (typ
         </div>
 
         <div className="relative">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setShowActions(!showActions)}
-            className="p-2 text-muted-foreground hover:text-card-foreground hover:bg-accent/50 rounded-xl transition-all duration-200 backdrop-blur-sm"
-          >
-            <FiMoreVertical className="w-4 h-4" />
-          </motion.button>
+          {actions.length > 0 ? (
+            <>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowActions(!showActions)}
+                className="p-2 text-muted-foreground hover:text-card-foreground hover:bg-accent/50 rounded-xl transition-all duration-200 backdrop-blur-sm"
+              >
+                <FiMoreVertical className="w-4 h-4" />
+              </motion.button>
 
-          <AnimatePresence>
-            {showActions && (
-              <>
-                <div 
-                  className="fixed inset-0 z-40" 
-                  onClick={() => setShowActions(false)}
-                />
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8, y: -10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, y: -10 }}
-                  className="absolute right-0 top-10 z-50 w-48 bg-card/95 backdrop-blur-xl rounded-2xl border border-border shadow-2xl py-2"
-                >
-                  {actions.map((action, index) => (
-                    <motion.button
-                      key={action.label}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      onClick={action.action}
-                      className={`flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium hover:bg-accent/50 transition-all duration-200 ${action.color}`}
+              <AnimatePresence>
+                {showActions && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setShowActions(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                      className="absolute right-0 top-10 z-50 w-48 bg-card/95 backdrop-blur-xl rounded-2xl border border-border shadow-2xl py-2"
                     >
-                      <action.icon className="w-4 h-4" />
-                      {action.label}
-                    </motion.button>
-                  ))}
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
+                      {actions.map((action, index) => (
+                        <motion.button
+                          key={action.label}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          onClick={action.action}
+                          className={`flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium hover:bg-accent/50 transition-all duration-200 ${action.color}`}
+                        >
+                          <action.icon className="w-4 h-4" />
+                          {action.label}
+                        </motion.button>
+                      ))}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </>
+          ) : (
+            // Show a disabled state when no actions are available
+            <div className="p-2 text-muted-foreground/30">
+              <FiMoreVertical className="w-4 h-4" />
+            </div>
+          )}
         </div>
       </div>
 
